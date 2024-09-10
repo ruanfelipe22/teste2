@@ -1,0 +1,795 @@
+<html><head><base href="https://reserva-imovel.com/"><link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"><title>Reservas Imobiliárias - LIFT ESMERALDA</title>
+<style>
+    body {
+        background-color: #1a2a3a; /* Changed background color */
+        color: #ffffff;
+    }
+    .container {
+        background-color: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        padding: 40px;
+        border-radius: 30px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        max-width: 1200px;
+        width: 100%;
+        display: none; /* Hide main content initially */
+    }
+    #banner {
+        background-color: #3498DB;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 2.5em;
+        font-weight: bold;
+        margin-bottom: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    h2 {
+        color: #ffffff;
+        margin-bottom: 30px;
+        text-align: center;
+        font-weight: 300;
+        letter-spacing: 2px;
+    }
+    .legend {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 15px;
+    }
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1em;
+    }
+    .legend-color {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+    }
+    .legend-color.available {
+        background-color: #2ECC71;
+    }
+    .legend-color.reserved {
+        background-color: #F39C12;
+    }
+    .legend-color.sold {
+        background-color: #E74C3C;
+    }
+    .legend-color.blocked {
+        background-color: #BDC3C7;
+    }
+    .towers-container {
+        display: flex;
+        justify-content: space-around;
+        width: 100%;
+        gap: 60px;
+    }
+    .tower {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .building {
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .floor {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    .floor-label {
+        width: 100%;
+        text-align: center;
+        margin-bottom: 10px;
+        background-color: rgba(52, 73, 94, 0.7);
+        color: white;
+        padding: 8px;
+        border-radius: 8px;
+        font-size: 0.9em;
+        font-weight: 500;
+    }
+    .unit-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 5px;
+    }
+    .unit {
+        width: 50px;
+        height: 40px;
+        border: none;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.3s;
+        position: relative;
+        font-size: 12px;
+        font-weight: 500;
+        border-radius: 15px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        overflow: hidden;
+    }
+    .unit:hover {
+        transform: scale(1.05);
+        z-index: 10;
+        box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    }
+    .sold {
+        background-color: #E74C3C;
+    }
+    .reserved {
+        background-color: #F39C12;
+    }
+    .available {
+        background-color: #2ECC71;
+    }
+    .blocked {
+        background-color: var(--blocked-color, #BDC3C7);
+    }
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0,0,0,0.6);
+    }
+    .modal-content {
+        background-color: #fff;
+        margin: 10% auto;
+        padding: 30px;
+        border-radius: 25px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        width: 350px;
+        text-align: center;
+    }
+    .modal-button {
+        margin: 10px;
+        padding: 12px 24px;
+        border: none;
+        cursor: pointer;
+        font-size: 16px;
+        transition: all 0.3s;
+        border-radius: 12px;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .modal-button:hover {
+        opacity: 0.9;
+        transform: translateY(-2px);
+    }
+    #soldBtn {
+        background-color: #E74C3C;
+        color: white;
+    }
+    #reservedBtn {
+        background-color: #F39C12;
+        color: white;
+    }
+    #availableBtn {
+        background-color: #2ECC71;
+        color: white;
+    }
+    #blockedBtn {
+        background-color: #BDC3C7;
+        color: white;
+    }
+    #loginSection {
+        margin-bottom: 30px;
+    }
+    #loginForm {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    #loginForm input, #observationInput {
+        margin: 8px;
+        padding: 12px;
+        width: 250px;
+        border: 2px solid #ECF0F1;
+        border-radius: 12px;
+        transition: border-color 0.3s;
+        font-size: 16px;
+    }
+    #loginForm input:focus, #observationInput:focus {
+        border-color: #3498DB;
+        outline: none;
+    }
+    #loginForm button, #logoutBtn, #saveObservationBtn {
+        margin-top: 15px;
+        padding: 12px 24px;
+        background-color: #3498DB;
+        color: white;
+        border: none;
+        cursor: pointer;
+        border-radius: 12px;
+        transition: all 0.3s;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 16px;
+    }
+    #loginForm button:hover, #logoutBtn:hover, #saveObservationBtn:hover {
+        background-color: #2980B9;
+        transform: translateY(-2px);
+    }
+    #logoutBtn {
+        background-color: #E74C3C;
+    }
+    #logoutBtn:hover {
+        background-color: #C0392B;
+    }
+    #manageUsersBtn, #addUserForm button {
+        background-color: #3498DB;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+    }
+    #addUserForm {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    #userList {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+    #accessLogList {
+        max-height: 300px;
+        overflow-y: auto;
+        margin-bottom: 20px;
+    }
+    #accessLogList div {
+        color: #000000; /* Change text color to black */
+        margin-bottom: 5px;
+        padding: 5px;
+        background-color: #f0f0f0; /* Light gray background for contrast */
+        border-radius: 5px;
+    }
+    #viewAccessLogBtn {
+        background-color: #2980B9;
+        color: white;
+    }
+    #exportExcelBtn {
+        background-color: #27AE60;
+        color: white;
+        margin-right: 10px;
+    }
+    #exportExcelBtn:hover {
+        background-color: #2ECC71;
+    }
+    .units {
+        display: flex;
+        gap: 8px;
+    }
+    .ribbon {
+        height: 15px;
+        line-height: 15px;
+        font-size: 10px;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: #E74C3C;
+        color: white;
+        text-align: center;
+        transition: transform 0.3s ease-in-out;
+        z-index: 10;
+        transform: translateY(100%);
+    }
+    .ribbon.show {
+        transform: translateY(0);
+    }
+    #userManagementModal .modal-content {
+        background-color: #f0f0f0; /* Light gray background for contrast */
+        color: #000000; /* Black text */
+    }
+    #userManagementModal input,
+    #userManagementModal label {
+        color: #000000; /* Ensure form inputs and labels are also black */
+    }
+    #userList div {
+        color: #000000; /* Ensure user list items are black */
+        margin-bottom: 5px;
+    }
+    .unit {
+        position: relative;
+        overflow: hidden;
+    }
+</style>
+</head><body>
+    <div id="loginSection">
+        <h2 id="loginStatus">Você não está logado</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Nome de usuário" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit">Entrar</button>
+        </form>
+        <button id="logoutBtn" style="display: none;">Logout</button>
+        <button id="manageUsersBtn" style="display: none;">Manage Users</button>
+    </div>
+    
+    <div class="container" id="mainContent">
+        <div id="banner">LIFT ESMERALDA</div>
+        
+        <div id="legend" class="legend">
+            <div class="legend-item">
+                <div class="legend-color available"></div>
+                <span>Disponível: <span id="availableCount">0</span></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color reserved"></div>
+                <span>Reservado: <span id="reservedCount">0</span></span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color sold"></div>
+                <span>Vendido: <span id="soldCount">0</span></span>
+            </div>
+            <div class="legend-item" id="blockedLegendItem" style="display: none;">
+                <div class="legend-color blocked"></div>
+                <span>Bloqueado: <span id="blockedCount">0</span></span>
+            </div>
+        </div>
+
+        <div class="towers-container">
+            <div class="tower">
+                <h2>Torre 1</h2>
+                <div class="building" id="tower1"></div>
+            </div>
+            <div class="tower">
+                <h2>Torre 2</h2>
+                <div class="building" id="tower2"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Status da unidade</h2>
+            <p id="unitStatus"></p>
+            <div id="adminOptions" style="display: none;">
+                <h3>Alterar status:</h3>
+                <button id="soldBtn" class="modal-button">Vendido</button>
+                <button id="reservedBtn" class="modal-button">Reservado</button>
+                <button id="availableBtn" class="modal-button">Disponível</button>
+                <button id="blockedBtn" class="modal-button">Bloqueado</button>
+                <div id="observationSection">
+                    <input type="text" id="observationInput" placeholder="Observação">
+                    <button id="saveObservationBtn">Salvar Observação</button>
+                </div>
+            </div>
+            <button id="closeModalBtn" class="modal-button">Fechar</button>
+        </div>
+    </div>
+
+    <div id="userManagementModal" class="modal">
+        <div class="modal-content">
+            <h2>User Management</h2>
+            <form id="addUserForm">
+                <input type="text" id="newUsername" placeholder="Username" required>
+                <input type="password" id="newPassword" placeholder="Password" required>
+                <label>
+                    <input type="checkbox" id="isAdminCheckbox"> Is Admin
+                </label>
+                <button type="submit">Add User</button>
+            </form>
+            <div id="userList"></div>
+            <button id="viewAccessLogBtn" class="modal-button">View Access Log</button>
+            <button id="closeUserManagementBtn" class="modal-button">Close</button>
+        </div>
+    </div>
+    
+    <div id="accessLogModal" class="modal">
+        <div class="modal-content">
+            <h2>Access Log</h2>
+            <div id="accessLogList"></div>
+            <button id="exportExcelBtn" class="modal-button">Export to Excel</button>
+            <button id="closeAccessLogBtn" class="modal-button">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const mainContent = document.getElementById('mainContent');
+        const loginForm = document.getElementById('loginForm');
+        const tower1 = document.getElementById('tower1');
+        const tower2 = document.getElementById('tower2');
+        const modal = document.getElementById('modal');
+        const loginStatus = document.getElementById('loginStatus');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const manageUsersBtn = document.getElementById('manageUsersBtn');
+        const userManagementModal = document.getElementById('userManagementModal');
+        const addUserForm = document.getElementById('addUserForm');
+        const userList = document.getElementById('userList');
+        const closeUserManagementBtn = document.getElementById('closeUserManagementBtn');
+        const adminOptions = document.getElementById('adminOptions');
+        const unitStatus = document.getElementById('unitStatus');
+        const observationInput = document.getElementById('observationInput');
+        const saveObservationBtn = document.getElementById('saveObservationBtn');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+        const accessLogModal = document.getElementById('accessLogModal');
+        const accessLogList = document.getElementById('accessLogList');
+        const closeAccessLogBtn = document.getElementById('closeAccessLogBtn');
+        const viewAccessLogBtn = document.getElementById('viewAccessLogBtn');
+        const exportExcelBtn = document.getElementById('exportExcelBtn');
+        let selectedUnit = null;
+        let isAdmin = false;
+
+        let users = {
+            ruanfelipe: { password: 'tack123', isAdmin: true }
+        };
+
+        let availableCount = 0;
+        let reservedCount = 0;
+        let soldCount = 0;
+        let blockedCount = 0;
+        let accessLog = [];
+
+        function saveToLocalStorage() {
+            const units = document.querySelectorAll('.unit');
+            const unitsData = Array.from(units).map(unit => ({
+                id: unit.textContent,
+                status: unit.dataset.status,
+                obs: unit.dataset.obs
+            }));
+            localStorage.setItem('unitsData', JSON.stringify(unitsData));
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('accessLog', JSON.stringify(accessLog));
+        }
+
+        function loadFromLocalStorage() {
+            const unitsData = JSON.parse(localStorage.getItem('unitsData'));
+            if (unitsData) {
+                unitsData.forEach(unitData => {
+                    const unit = document.querySelector(`.unit:not(.loaded)[textContent="${unitData.id}"]`);
+                    if (unit) {
+                        unit.className = `unit ${unitData.status}`;
+                        unit.dataset.status = unitData.status;
+                        unit.dataset.obs = unitData.obs;
+                        unit.classList.add('loaded');
+                        if (unitData.status === 'sold' || unitData.status === 'blocked') {
+                            addRibbonToUnit(unit);
+                        }
+                    }
+                });
+            }
+            const savedUsers = localStorage.getItem('users');
+            if (savedUsers) {
+                users = JSON.parse(savedUsers);
+            }
+            const savedAccessLog = localStorage.getItem('accessLog');
+            if (savedAccessLog) {
+                accessLog = JSON.parse(savedAccessLog);
+            }
+        }
+
+        function updateLegend() {
+            document.getElementById('availableCount').textContent = availableCount;
+            document.getElementById('reservedCount').textContent = reservedCount;
+            document.getElementById('soldCount').textContent = isAdmin ? soldCount : (soldCount + blockedCount);
+            
+            const blockedLegendItem = document.getElementById('blockedLegendItem');
+            if (isAdmin) {
+                blockedLegendItem.style.display = 'flex';
+                document.getElementById('blockedCount').textContent = blockedCount;
+            } else {
+                blockedLegendItem.style.display = 'none';
+            }
+        }
+
+        function recordAccess(username) {
+            const timestamp = new Date().toLocaleString();
+            accessLog.unshift({ username, timestamp });
+            if (accessLog.length > 50) {
+                accessLog.pop();
+            }
+            saveToLocalStorage();
+        }
+
+        manageUsersBtn.style.display = 'none';
+
+        function showUserManagement() {
+            userManagementModal.style.display = 'block';
+            updateUserList();
+            viewAccessLogBtn.style.display = isAdmin ? 'block' : 'none';
+        }
+
+        function closeUserManagement() {
+            userManagementModal.style.display = 'none';
+        }
+
+        function updateUserList() {
+            userList.innerHTML = '';
+            for (const username in users) {
+                const userDiv = document.createElement('div');
+                userDiv.textContent = `${username} (${users[username].isAdmin ? 'Admin' : 'Regular'})`;
+                userList.appendChild(userDiv);
+            }
+        }
+
+        viewAccessLogBtn.addEventListener('click', showAccessLog);
+        closeAccessLogBtn.addEventListener('click', closeAccessLog);
+        
+        function showAccessLog() {
+            accessLogList.innerHTML = '';
+            accessLog.forEach(entry => {
+                const logEntry = document.createElement('div');
+                logEntry.textContent = `${entry.username} - ${entry.timestamp}`;
+                accessLogList.appendChild(logEntry);
+            });
+            accessLogModal.style.display = 'block';
+            exportExcelBtn.style.display = isAdmin ? 'inline-block' : 'none';
+        }
+
+        function closeAccessLog() {
+            accessLogModal.style.display = 'none';
+        }
+
+        manageUsersBtn.addEventListener('click', showUserManagement);
+        closeUserManagementBtn.addEventListener('click', closeUserManagement);
+
+        addUserForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const newUsername = document.getElementById('newUsername').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const isAdmin = document.getElementById('isAdminCheckbox').checked;
+
+            if (users[newUsername]) {
+                alert('Username already exists');
+                return;
+            }
+
+            users[newUsername] = { password: newPassword, isAdmin: isAdmin };
+            updateUserList();
+            addUserForm.reset();
+            saveToLocalStorage();
+        });
+
+        function createTower(towerElement, startUnit, endUnit) {
+            for (let floor = 1; floor <= 10; floor++) {
+                const floorDiv = document.createElement('div');
+                floorDiv.className = 'floor';
+                
+                const floorLabel = document.createElement('div');
+                floorLabel.className = 'floor-label';
+                floorLabel.textContent = `${floor}º Andar`;
+                floorDiv.appendChild(floorLabel);
+                
+                const unitsDiv = document.createElement('div');
+                unitsDiv.className = 'units';
+                
+                for (let unit = startUnit; unit < startUnit + 5; unit++) {
+                    if (unit > endUnit) break;
+                    const unitContainer = document.createElement('div');
+                    unitContainer.className = 'unit-container';
+
+                    const unitDiv = document.createElement('div');
+                    unitDiv.className = 'unit available';
+                    unitDiv.textContent = unit;
+                    unitDiv.addEventListener('click', () => openModal(unitDiv));
+                    unitDiv.dataset.status = 'available';
+                    unitDiv.dataset.obs = '';
+
+                    unitContainer.appendChild(unitDiv);
+                    unitsDiv.appendChild(unitContainer);
+                }
+                
+                floorDiv.appendChild(unitsDiv);
+                towerElement.appendChild(floorDiv);
+                startUnit += 5;
+            }
+            saveToLocalStorage();
+        }
+
+        function initializeCounts() {
+            const units = document.querySelectorAll('.unit');
+            units.forEach(unit => {
+                const status = unit.dataset.status;
+                if (status === 'available') availableCount++;
+                if (status === 'reserved') reservedCount++;
+                if (status === 'sold') soldCount++;
+                if (status === 'blocked') blockedCount++;
+            });
+            updateLegend();
+        }
+
+        createTower(tower1, 1, 50);
+        createTower(tower2, 51, 100);
+        loadFromLocalStorage();
+        initializeCounts();
+
+        function openModal(unit) {
+            selectedUnit = unit;
+            modal.style.display = 'block';
+            updateModalContent();
+        }
+
+        function closeModal() {
+            modal.style.display = 'none';
+        }
+
+        function updateModalContent() {
+            const status = selectedUnit.dataset.status;
+            const statusText = {
+                'sold': 'Vendido',
+                'reserved': 'Reservado',
+                'available': 'Disponível',
+                'blocked': isAdmin ? 'Bloqueado' : 'Vendido'
+            };
+            unitStatus.textContent = `Status: ${statusText[status]}`;
+            adminOptions.style.display = isAdmin ? 'block' : 'none';
+            observationInput.value = selectedUnit.dataset.obs || '';
+        }
+
+        document.getElementById('soldBtn').addEventListener('click', () => updateStatus('sold'));
+        document.getElementById('reservedBtn').addEventListener('click', () => updateStatus('reserved'));
+        document.getElementById('availableBtn').addEventListener('click', () => updateStatus('available'));
+        document.getElementById('blockedBtn').addEventListener('click', () => updateStatus('blocked'));
+
+        function addRibbonToUnit(unit) {
+            let ribbon = unit.querySelector('.ribbon');
+            if (!ribbon) {
+                ribbon = document.createElement('div');
+                ribbon.className = 'ribbon';
+                ribbon.textContent = 'Vendido';
+                unit.appendChild(ribbon);
+            }
+            setTimeout(() => ribbon.classList.add('show'), 10);
+        }
+
+        function removeRibbonFromUnit(unit) {
+            const ribbon = unit.querySelector('.ribbon');
+            if (ribbon) {
+                ribbon.classList.remove('show');
+                setTimeout(() => ribbon.remove(), 300);
+            }
+        }
+
+        function updateStatus(status) {
+            if (selectedUnit && isAdmin) {
+                const oldStatus = selectedUnit.dataset.status;
+                selectedUnit.className = `unit ${status}`;
+                selectedUnit.dataset.status = status;
+
+                if (oldStatus !== status) {
+                    if (oldStatus === 'available') availableCount--;
+                    if (oldStatus === 'reserved') reservedCount--;
+                    if (oldStatus === 'sold') soldCount--;
+                    if (oldStatus === 'blocked') blockedCount--;
+                    
+                    if (status === 'available') availableCount++;
+                    if (status === 'reserved') reservedCount++;
+                    if (status === 'sold') soldCount++;
+                    if (status === 'blocked') blockedCount++;
+                    
+                    if (status === 'sold' || status === 'blocked') {
+                        addRibbonToUnit(selectedUnit);
+                    } else {
+                        removeRibbonFromUnit(selectedUnit);
+                    }
+                }
+                
+                updateModalContent();
+                updateUnitDisplay();
+                updateLegend();
+                saveToLocalStorage();
+            }
+        }
+
+        function getStatusText(status) {
+            switch (status) {
+                case 'available': return 'Disponível';
+                case 'reserved': return 'Reservado';
+                case 'sold': return 'Vendido';
+                case 'blocked': return isAdmin ? 'Bloqueado' : 'Vendido';
+                default: return '';
+            }
+        }
+
+        function updateUnitDisplay() {
+            const units = document.querySelectorAll('.unit');
+            units.forEach(unit => {
+                if (unit.dataset.status === 'blocked') {
+                    unit.style.backgroundColor = isAdmin ? '#BDC3C7' : '#E74C3C'; // Red for non-admin
+                } else {
+                    unit.style.backgroundColor = '';
+                }
+                
+                if (unit.dataset.status === 'sold' || (!isAdmin && unit.dataset.status === 'blocked')) {
+                    addRibbonToUnit(unit);
+                } else {
+                    removeRibbonFromUnit(unit);
+                }
+            });
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (users[username] && users[username].password === password) {
+                isAdmin = users[username].isAdmin;
+                loginStatus.textContent = `Logado como ${isAdmin ? 'Administrador' : 'Usuário Regular'}`;
+                loginForm.style.display = 'none'; // Hide the form after successful login
+                logoutBtn.style.display = 'block';
+                if (isAdmin) {
+                    manageUsersBtn.style.display = 'block';
+                }
+                updateLegend();
+                mainContent.style.display = 'block'; // Show main content after successful login
+                updateUnitDisplay(); // Update unit colors after login
+            } else {
+                alert('Credenciais inválidas');
+            }
+        });
+
+        logoutBtn.addEventListener('click', () => {
+            isAdmin = false;
+            loginStatus.textContent = 'Você não está logado';
+            loginForm.style.display = 'flex'; // Show login form instead of button
+            logoutBtn.style.display = 'none';
+            manageUsersBtn.style.display = 'none';
+            updateLegend();
+            mainContent.style.display = 'none'; // Hide main content after logout
+            updateUnitDisplay(); // Update unit colors after logout
+        });
+
+        saveObservationBtn.addEventListener('click', () => {
+            if (selectedUnit && isAdmin) {
+                selectedUnit.dataset.obs = observationInput.value;
+                closeModal();
+                saveToLocalStorage();
+            }
+        });
+
+        closeModalBtn.addEventListener('click', closeModal);
+
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        function generateCSV() {
+            let csvContent = "data:text/csv;charset=utf-8,";
+            csvContent += "Username,Timestamp\n";
+            accessLog.forEach(entry => {
+                csvContent += `${entry.username},${entry.timestamp}\n`;
+            });
+            return encodeURI(csvContent);
+        }
+
+        function downloadCSV(csvContent) {
+            const link = document.createElement("a");
+            link.setAttribute("href", csvContent);
+            link.setAttribute("download", "access_log.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        exportExcelBtn.addEventListener('click', () => {
+            const csvContent = generateCSV();
+            downloadCSV(csvContent);
+        });
+    </script>
+</body></html>
